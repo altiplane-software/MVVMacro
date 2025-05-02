@@ -1,71 +1,67 @@
- version: 2.1
-
-orbs:
-  macos: circleci/macos@2.2.0
+version: 2.1
 
 jobs:
   build-development:
     macos:
       xcode: "16.2.0"
     steps:
-      - checkout
-      - run:
-          name: Build and Test (Development)
-          command: |
-            swift build
-            swift test
+    - checkout
+    - run:
+        name: Build and Test (Development)
+        command: |
+          swift build
+          swift test
 
   build-production:
     macos:
       xcode: "16.2.0"
     steps:
-      - checkout
-      - run:
-          name: Build and Test (Production)
-          command: |
-            export MVVMACRO_PRODUCTION=1
-            swift build
-            swift test
-      - run:
-          name: Create XCFramework
-          command: |
-            xcodebuild archive \
-              -scheme MVVMacroImpl \
-              -archivePath ./build/MVVMacroImpl.xcarchive \
-              SKIP_INSTALL=NO \
-              BUILD_LIBRARY_FOR_DISTRIBUTION=YES
-            
-            xcodebuild -create-xcframework \
-              -framework ./build/MVVMacroImpl.xcarchive/Products/Library/Frameworks/MVVMacroImpl.framework \
-              -output ./Artifacts/MVVMacroBinary.xcframework
-      - persist_to_workspace:
-          root: .
-          paths:
-            - Artifacts/MVVMacroBinary.xcframework
+    - checkout
+    - run:
+        name: Build and Test (Production)
+        command: |
+          export MVVMACRO_PRODUCTION=1
+          swift build
+          swift test
+    - run:
+        name: Create XCFramework
+        command: |
+          xcodebuild archive \
+            -scheme MVVMacroImpl \
+            -archivePath ./build/MVVMacroImpl.xcarchive \
+            SKIP_INSTALL=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+          xcodebuild -create-xcframework \
+            -framework ./build/MVVMacroImpl.xcarchive/Products/Library/Frameworks/MVVMacroImpl.framework \
+            -output ./Artifacts/MVVMacroBinary.xcframework
+    - persist_to_workspace:
+        root: .
+        paths:
+        - Artifacts/MVVMacroBinary.xcframework
 
   release:
     macos:
       xcode: "15.3.0"
     steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Create Release
-          command: |
-            # Add your release steps here
-            # For example, creating a GitHub release with the XCFramework
+    - attach_workspace:
+        at: .
+    - run:
+        name: Create Release
+        command: |
+          # Add your release steps here
+          # For example, creating a GitHub release with the XCFramework
 
 workflows:
-  version: 2
   build-and-test:
     jobs:
-      - build-development
-      - build-production:
-          requires:
-            - build-development
-      - release:
-          requires:
-            - build-production
-          filters:
-            branches:
-              only: main
+    - build-development
+    - build-production:
+        requires:
+        - build-development
+    - release:
+        requires:
+        - build-production
+        filters:
+          branches:
+            only: main
