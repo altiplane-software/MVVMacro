@@ -28,7 +28,7 @@ let package = Package(
             name: "MVVMacroAPI",
             dependencies: [
                 .target(
-                    name: isProduction ? "MVVMacroBinary" : "MVVMacroImpl",
+                    name: isProduction ? "MVVMacroBinary" : "MVVMacroImpl"
                 )
             ]
         ),
