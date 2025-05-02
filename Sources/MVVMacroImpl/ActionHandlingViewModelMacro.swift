@@ -346,23 +346,33 @@ public struct ActionHandlingViewModelMacro: MemberMacro, ExtensionMacro {
             return []
         }
 
-        // Synthesize the new actionHandlers
-        let newEntries = actionCases.map {
-            $0.hasAssociatedValue
-            ? ".\($0.caseName): bindHandler(\($0.caseName))"
-            : ".\($0.caseName): { [weak self] _ in self?.\($0.caseName)() }"
+        // Generate the handle method with a switch statement
+        let switchCases = actionCases.map { actionCase in
+            if actionCase.hasAssociatedValue {
+                "case .\(actionCase.caseName)(let value):\n        \(actionCase.caseName)(value: value)"
+            } else {
+                "case .\(actionCase.caseName):\n        \(actionCase.caseName)()"
+            }
+        }.joined(separator: "\n    ")
+
+        // Generate the handle method and send implementation
+        let handleImplementation = """
+        \(visibilityPrefix)typealias SendableAction = Action
+
+        @MainActor
+        private func handle(action: Action) {
+            switch action {
+            \(switchCases)
+            }
         }
 
-        let actionHandlersProperty = """
-        \(visibilityPrefix)typealias SendableAction = Action
-        
         @MainActor
-        \(visibilityPrefix)private(set) lazy var actionHandlers: [Action.Key: (Any?) -> Void] = [
-            \(newEntries.joined(separator: ",\n    "))
-        ]
+        \(visibilityPrefix)func send(_ action: SendableAction) {
+            handle(action: action)
+        }
         """
-        let actionHandlersDecl = DeclSyntax(stringLiteral: actionHandlersProperty)
-        return [actionHandlersDecl]
+        let handleDecl = DeclSyntax(stringLiteral: handleImplementation)
+        return [handleDecl]
     }
 
     public static func expansion(
