@@ -24,11 +24,13 @@ check_swift() {
     echo "Info: Using $current_version"
 }
 
-# Function to check if files already exist - now always proceeds
+# Function to check if necessary files exist
 check_files() {
-    # Check if Package.swift exists and is not a symlink
-    if [ -f "Package.swift" ]; then
-        echo "Note: Package.swift exists, will overwrite if needed"
+    # Check if Package.swift exists
+    if [ ! -f "Package.swift" ]; then
+        echo "Warning: Package.swift not found, this is required for the project"
+    else
+        echo "Found Package.swift"
     fi
 }
 
@@ -36,24 +38,17 @@ check_files() {
 setup_development() {
     echo "Setting up MVVMacro development environment..."
     
-    # Create initial development configuration
-    cp Package.development.swift Package.swift
-    
-    # Make build script executable
-    chmod +x build_xcframework.sh
-    
-    # Create empty Artifacts directory if it doesn't exist
-    mkdir -p Artifacts
+    # Verify Package.swift exists
+    if [ ! -f "Package.swift" ]; then
+        echo "Error: Package.swift not found"
+        exit 1
+    fi
     
     echo "Development environment setup complete!"
     echo
     echo "Next steps:"
-    echo "1. Run 'make dev' to ensure you're in development mode"
-    echo "2. Run 'make build' to build the project"
-    echo "3. Run 'make test' to run tests"
-    echo
-    echo "When ready to create a distribution build:"
-    echo "1. Run 'make dist' to build the XCFramework and switch to distribution mode"
+    echo "1. Run 'make test' to build and test the project"
+    echo "2. Run 'make help' to see all available commands"
 }
 
 # Run setup

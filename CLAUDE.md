@@ -3,16 +3,14 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build and Test Commands
-- Build: `swift build`
-- Test all: `swift test`
+- Build and test: `make test` or `swift test`
 - List tests: `swift test --list-tests`
 - Run single test: `swift test --filter MVVMacroTests/testFunctionName`
-- Production build: `MVVMACRO_PRODUCTION=1 swift build -c release` (requires binary artifacts)
+- Production build: `swift build -c release`
 
 ## CI/CD
 - CI uses CircleCI with macOS/Xcode environments
-- Development job: `swift build && swift test`
-- Production job: Creates XCFramework for distribution
+- Job: `swift test` (handles building automatically)
 - CircleCI config in `.circleci/config.yml`
 - Note: CircleCI macOS jobs cannot run locally with `circleci local execute`
 
@@ -29,6 +27,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Structure
 - MVVMacroAPI: Public API interfaces and protocols
-- MVVMacroImpl: Macro implementation details (development only)
-- MVVMacroBinary: Binary distribution (production only)
+- MVVMacroImpl: Macro implementation details
 - Tests: Unit tests for macro functionality

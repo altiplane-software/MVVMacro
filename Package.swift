@@ -12,10 +12,6 @@ let package = Package(
             name: "MVVMacro",
             type: .static,
             targets: ["MVVMacroAPI"]
-        ),
-        .executable(
-            name: "MVVMacroBinaryBuilder",
-            targets: ["MVVMacroBinaryBuilder"]
         )
     ],
     dependencies: [
@@ -38,15 +34,6 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ],
             exclude: ["README.md"]
-        ),
-        
-        // Tool for building the binary artifact
-        .executableTarget(
-            name: "MVVMacroBinaryBuilder",
-            dependencies: [
-                "MVVMacroImpl",
-                "MVVMacroAPI"
-            ]
         ),
         
         // Test target
