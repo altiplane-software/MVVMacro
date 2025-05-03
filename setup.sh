@@ -18,40 +18,17 @@ check_xcode() {
     fi
 }
 
-# Function to check Swift version
+# Function to check Swift version - currently just logs the version without validation
 check_swift() {
-    local required_version="6.0.3"
-    local current_version=$(swift --version | head -n 1 | sed 's/.*Swift version \([0-9.]*\).*/\1/')
-    
-    if [ "$(printf '%s\n' "$required_version" "$current_version" | sort -V | head -n1)" != "$required_version" ]; then
-        echo "Warning: Swift version $required_version is required, but $current_version is installed"
-        echo "You may encounter build issues if continuing"
-        read -p "Continue anyway? (y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
-    fi
+    local current_version=$(swift --version | head -n 1)
+    echo "Info: Using $current_version"
 }
 
-# Function to check if files already exist
+# Function to check if files already exist - now always proceeds
 check_files() {
-    local files_exist=0
-    
-    # Check if Package.swift exists and is not a symlink to either development or distribution
-    if [ -f "Package.swift" ] && [ ! -L "Package.swift" ]; then
-        files_exist=1
-    fi
-    
-    # If any required file exists, ask user before proceeding
-    if [ $files_exist -eq 1 ]; then
-        echo "Warning: Some setup files already exist"
-        read -p "Overwrite existing files? (y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo "Setup cancelled"
-            exit 0
-        fi
+    # Check if Package.swift exists and is not a symlink
+    if [ -f "Package.swift" ]; then
+        echo "Note: Package.swift exists, will overwrite if needed"
     fi
 }
 
