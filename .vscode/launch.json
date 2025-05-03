@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MVVMacro}",
+            "name": "Debug MVVMacroBinaryBuilder",
+            "program": "${workspaceFolder:MVVMacro}/.build/debug/MVVMacroBinaryBuilder",
+            "preLaunchTask": "swift: Build Debug MVVMacroBinaryBuilder"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:MVVMacro}",
+            "name": "Release MVVMacroBinaryBuilder",
+            "program": "${workspaceFolder:MVVMacro}/.build/release/MVVMacroBinaryBuilder",
+            "preLaunchTask": "swift: Build Release MVVMacroBinaryBuilder"
+        }
+    ]
+}
