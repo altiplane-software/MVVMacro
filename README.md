@@ -221,4 +221,4 @@ struct TodoView: View {
 
 ## License
 
-MVVMacro is available under the MIT license. See the LICENSE file for more info.
+MVVMacro is available under the GNU General Public License v3.0 (GPL-3.0). See the LICENSE file for more info.
