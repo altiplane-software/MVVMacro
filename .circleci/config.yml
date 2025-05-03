@@ -8,15 +8,30 @@ jobs:
       FASTLANE_SKIP_UPDATE_CHECK: true
     steps:
       - checkout
+      
+      # Restore Swift package cache
+      - restore_cache:
+          keys:
+            - spm-cache-v1-{{ checksum "Package.resolved" }}
+            - spm-cache-v1-
+      
       - run:
           name: Setup development environment
           command: |
             chmod +x setup.sh
             ./setup.sh
+      
       - run:
           name: Build and test
           command: |
             make test
+      
+      # Save Swift package cache
+      - save_cache:
+          key: spm-cache-v1-{{ checksum "Package.resolved" }}
+          paths:
+            - ~/.swiftpm
+            - .build
 
 workflows:
   version: 2
