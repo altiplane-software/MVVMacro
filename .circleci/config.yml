@@ -21,20 +21,33 @@ jobs:
         name: Build and Test (Production)
         command: |
           export MVVMACRO_PRODUCTION=1
-          swift build
+          swift build -c release
           swift test
     - run:
         name: Create XCFramework
         command: |
-          xcodebuild archive \
-            -scheme MVVMacroImpl \
-            -archivePath ./build/MVVMacroImpl.xcarchive \
-            SKIP_INSTALL=NO \
-            BUILD_LIBRARY_FOR_DISTRIBUTION=YES
-
-          xcodebuild -create-xcframework \
-            -framework ./build/MVVMacroImpl.xcarchive/Products/Library/Frameworks/MVVMacroImpl.framework \
-            -output ./Artifacts/MVVMacroBinary.xcframework
+          # Create Artifacts directory if it doesn't exist
+          mkdir -p Artifacts
+          
+          # Build the macro as a library
+          swift build -c release
+          
+          # Create the XCFramework directly from the built products
+          # This approach builds and packages a binary Swift package plugin
+          swift package --allow-writing-to-directory ./Artifacts \
+            archive \
+            --output-directory ./Artifacts \
+            --archive-product MVVMacroImpl
+            
+          # Rename the resulting .zip to our expected XCFramework name
+          mv ./Artifacts/MVVMacroImpl.zip ./Artifacts/MVVMacroImpl.xcframework.zip
+          
+          # Extract it
+          unzip -o ./Artifacts/MVVMacroImpl.xcframework.zip -d ./Artifacts
+          
+          # Create the expected directory structure
+          mkdir -p ./Artifacts/MVVMacroBinary.xcframework
+          cp -R ./Artifacts/MVVMacroImpl/* ./Artifacts/MVVMacroBinary.xcframework/
     - persist_to_workspace:
         root: .
         paths:
