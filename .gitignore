@@ -7,6 +7,20 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
 
+# XCFramework artifacts
+/Artifacts/
+*.xcframework/
+
+# Package backup files
+Package.swift.bak
+
+# Temporary build files
+*.tmp
+
 # Claude Code files
 CLAUDE.md
 .claude/
+
+# The Package.swift should be the development version in the repository
+# Package.distribution.swift is used for creating the final distribution
+# But both files should be committed

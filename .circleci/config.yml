@@ -1,79 +1,52 @@
 version: 2.1
 
 jobs:
-  build-development:
+  build-and-test:
     macos:
-      xcode: "16.2.0"
+      xcode: 15.3.0 # Use the latest Xcode version available on CircleCI
+    environment:
+      FASTLANE_SKIP_UPDATE_CHECK: true
     steps:
-    - checkout
-    - run:
-        name: Build and Test (Development)
-        command: |
-          swift build
-          swift test
+      - checkout
+      - run:
+          name: Setup development environment
+          command: |
+            chmod +x setup.sh
+            ./setup.sh
+      - run:
+          name: Build and test
+          command: |
+            make dev
+            make build
+            make test
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-  build-production:
+  build-xcframework:
     macos:
-      xcode: "16.2.0"
+      xcode: 15.3.0
     steps:
-    - checkout
-    - run:
-        name: Create XCFramework
-        command: |
-          # Create Artifacts directory if it doesn't exist
-          mkdir -p Artifacts
-          
-          # Build the macro as a library (in development mode)
-          swift build -c release
-          
-          # Create the XCFramework directly from the built products
-          swift package --allow-writing-to-directory ./Artifacts \
-            archive \
-            --output-directory ./Artifacts \
-            --archive-product MVVMacroImpl
-            
-          # Rename the resulting .zip to our expected XCFramework name
-          mv ./Artifacts/MVVMacroImpl.zip ./Artifacts/MVVMacroImpl.xcframework.zip
-          
-          # Extract it
-          unzip -o ./Artifacts/MVVMacroImpl.xcframework.zip -d ./Artifacts
-          
-          # Create the expected directory structure
-          mkdir -p ./Artifacts/MVVMacroBinary.xcframework
-          cp -R ./Artifacts/MVVMacroImpl/* ./Artifacts/MVVMacroBinary.xcframework/
-    - run:
-        name: Build and Test (Production)
-        command: |
-          export MVVMACRO_PRODUCTION=1
-          swift build -c release
-          swift test
-    - persist_to_workspace:
-        root: .
-        paths:
-        - Artifacts/MVVMacroBinary.xcframework
-
-  release:
-    macos:
-      xcode: "15.3.0"
-    steps:
-    - attach_workspace:
-        at: .
-    - run:
-        name: Create Release
-        command: |
-          # Add your release steps here
-          # For example, creating a GitHub release with the XCFramework
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build XCFramework
+          command: |
+            make build-xcframework
+      - store_artifacts:
+          path: Artifacts/MVVMacroBinary.xcframework
+          destination: XCFramework
 
 workflows:
-  build-and-test:
+  version: 2
+  build-test-deploy:
     jobs:
-    - build-development
-    - build-production:
-        requires:
-        - build-development
-    - release:
-        requires:
-        - build-production
-        filters:
-          branches:
-            only: main
+      - build-and-test
+      - build-xcframework:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
+EOF < /dev/null
