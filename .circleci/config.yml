@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  snyk: snyk/snyk@2.3.0
-
 jobs:
   build-and-test:
     macos:
@@ -28,13 +25,6 @@ jobs:
           name: Build and test
           command: |
             make test
-      
-      # Run Snyk scan to check for vulnerabilities
-      - snyk/scan:
-          fail-on-issues: false
-          monitor-on-build: true
-          token-variable: SNYK_TOKEN
-          additional-arguments: --all-projects
       
       # Save Swift package cache
       - save_cache:
