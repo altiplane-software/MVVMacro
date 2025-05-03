@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(command -v:*)",
+      "Bash(circleci local execute:*)",
+      "Bash(export MVVMACRO_PRODUCTION=1)",
+      "Bash(swift build:*)",
+      "Bash(swift test)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  }
+}
