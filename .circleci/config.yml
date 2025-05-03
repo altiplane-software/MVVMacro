@@ -18,22 +18,15 @@ jobs:
     steps:
     - checkout
     - run:
-        name: Build and Test (Production)
-        command: |
-          export MVVMACRO_PRODUCTION=1
-          swift build -c release
-          swift test
-    - run:
         name: Create XCFramework
         command: |
           # Create Artifacts directory if it doesn't exist
           mkdir -p Artifacts
           
-          # Build the macro as a library
+          # Build the macro as a library (in development mode)
           swift build -c release
           
           # Create the XCFramework directly from the built products
-          # This approach builds and packages a binary Swift package plugin
           swift package --allow-writing-to-directory ./Artifacts \
             archive \
             --output-directory ./Artifacts \
@@ -48,6 +41,12 @@ jobs:
           # Create the expected directory structure
           mkdir -p ./Artifacts/MVVMacroBinary.xcframework
           cp -R ./Artifacts/MVVMacroImpl/* ./Artifacts/MVVMacroBinary.xcframework/
+    - run:
+        name: Build and Test (Production)
+        command: |
+          export MVVMACRO_PRODUCTION=1
+          swift build -c release
+          swift test
     - persist_to_workspace:
         root: .
         paths:
