@@ -16,36 +16,10 @@ jobs:
       - run:
           name: Build and test
           command: |
-            make dev
-            make build
             make test
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-
-  build-xcframework:
-    macos:
-      xcode: 16.2.0
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Build XCFramework
-          command: |
-            make build-xcframework
-      - store_artifacts:
-          path: Artifacts/MVVMacroBinary.xcframework
-          destination: XCFramework
 
 workflows:
   version: 2
-  build-test-deploy:
+  build-and-test:
     jobs:
       - build-and-test
-      - build-xcframework:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: main

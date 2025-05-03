@@ -1,4 +1,4 @@
-.PHONY: all dev dist test clean build-xcframework setup help
+.PHONY: all clean setup help test
 
 # Default target
 all: help
@@ -16,37 +16,11 @@ setup: check-macos
 	@./setup.sh
 	@echo "Setup complete!"
 
-# Switch to development mode
-dev: check-macos
-	@echo "Switching to development mode..."
-	@cp Package.development.swift Package.swift
-	@echo "Done! You can now run 'make build' or 'make test'"
-
-# Switch to distribution mode
-dist: check-macos
-	@echo "Building XCFramework and switching to distribution mode..."
-	@chmod +x build_xcframework.sh
-	@./build_xcframework.sh --distribution
-	@echo "Done! Distribution package is now active"
-
-# Build the project
-build: check-macos
-	@echo "Building MVVMacro..."
-	@swift build
-	@echo "Build complete!"
-
-# Run tests
+# Test the project (automatically builds first)
 test: check-macos
-	@echo "Running tests..."
+	@echo "Building and testing MVVMacro..."
 	@swift test
 	@echo "Tests complete!"
-
-# Build XCFramework for distribution
-build-xcframework: check-macos
-	@echo "Building XCFramework..."
-	@chmod +x build_xcframework.sh
-	@./build_xcframework.sh
-	@echo "XCFramework build complete!"
 
 # Clean build artifacts
 clean: check-macos
@@ -58,9 +32,5 @@ clean: check-macos
 help:
 	@echo "MVVMacro Makefile Commands:"
 	@echo "  make setup              - Set up the development environment"
-	@echo "  make dev                - Switch to development mode"
-	@echo "  make dist               - Build XCFramework and switch to distribution mode"
-	@echo "  make build              - Build the current package"
-	@echo "  make test               - Run tests"
-	@echo "  make build-xcframework  - Build the XCFramework for distribution"
+	@echo "  make test               - Build and test the project"
 	@echo "  make clean              - Clean build artifacts"
