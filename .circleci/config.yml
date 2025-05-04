@@ -32,13 +32,18 @@ jobs:
           command: |
             npm install -g snyk
             snyk --version
-      
-      # Run Snyk scan directly
+      - run:
+         name: Snyk CLI Auth
+         command: |
+            # Authenticate using token
+            snyk auth --auth-type=token ${SNYK_TOKEN}
+
+      # Run Snyk scan directly - using token from environment variable
       - run:
           name: Run Snyk security scan
           command: |
-            snyk auth $SNYK_TOKEN
-            snyk monitor --all-projects --severity-threshold=high
+            # Using token directly instead of interactive auth
+            snyk test --all-projects --severity-threshold=high
       
       # Save Swift package cache
       - save_cache:
