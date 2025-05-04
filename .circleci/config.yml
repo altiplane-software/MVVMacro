@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  snyk: snyk/snyk@2.3.0
-
 jobs:
   build-and-test:
     macos:
@@ -28,13 +25,20 @@ jobs:
           name: Build and test
           command: |
             make test
-            
-      # Run Snyk scan to check for vulnerabilities
-      - snyk/scan:
-          fail-on-issues: false
-          monitor-on-build: true
-          token-variable: SNYK_TOKEN
-          additional-arguments: --all-projects
+      
+      # Install Snyk using npm (works better on macOS)
+      - run:
+          name: Install Snyk CLI
+          command: |
+            npm install -g snyk
+            snyk --version
+      
+      # Run Snyk scan directly
+      - run:
+          name: Run Snyk security scan
+          command: |
+            snyk auth $SNYK_TOKEN
+            snyk monitor --all-projects --severity-threshold=high
       
       # Save Swift package cache
       - save_cache:
