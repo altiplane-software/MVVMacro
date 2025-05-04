@@ -1,0 +1,37 @@
+# Snyk (https://snyk.io) policy file
+version: v1.25.0
+
+# Swift specific configuration
+language-settings:
+  swift:
+    package-folders:
+      - Sources/MVVMacroAPI
+      - Sources/MVVMacroImpl
+
+# Organizations and projects to monitor
+org: altiplane-software
+project: MVVMacro
+
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-SWIFT-SWIFTSYNTAX-6010271:
+    - '*':
+        reason: Using fixed version from Swift toolchain
+        expires: 2025-05-01T00:00:00.000Z
+  SNYK-SWIFT-NONE-0:
+    - '*':
+        reason: Placeholder for future vulnerabilities
+        expires: 2025-05-01T00:00:00.000Z
+
+# Exclude development and test files from scanning
+exclude:
+  global:
+    - Tests/**
+    - .build/**
+    - "**/*.md"
+
+# patches apply the minimum changes required to fix a vulnerability
+patch: {}
+
+# Configure the severity-threshold. If set, Snyk will only report vulnerabilities with the specified severity or higher.
+severity-threshold: medium
